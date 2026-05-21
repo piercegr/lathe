@@ -1,5 +1,6 @@
 # globals
-RESET="\033[0m" 
+RESET="\033[0m"
+source "$(dirname "$0")/../config/defaults.conf"
 
 # sets the input hex into making the outputs that color
 function hex_to_ansi() {
@@ -15,11 +16,12 @@ function hex_to_ansi() {
 
 # sourcing / loading theme
 load_theme() {
-  if [[ -f "$1" ]]; then
-    source "$1"
+  local THEME="${1:-$LATHE_THEME}"
+  local THEME_PATH="$(dirname "$0")/../config/themes/$THEME.conf"
+  if [[ -f "$THEME_PATH" ]]; then
+    source "$THEME_PATH"
   else
-    # hard coded color bc the err color won't be loaded when it errs
-    printf "$(hex_to_ansi "#f87171")Error: theme file not found: $1${RESET}\n"
+    printf "$(hex_to_ansi "#f87171")Error: theme '$THEME' not found${RESET}\n"
   fi
 }
 
@@ -251,7 +253,9 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   printf "$(hex_to_ansi "#7dd3fc")hello${RESET} world\n" 
 
   # test 2: load_theme function
-  load_theme "config/themes/mono.conf"
+  load_theme amber
+  printf "$(hex_to_ansi "$COLOR_ACCENT")accent color loaded\n${RESET}"
+  load_theme
   printf "$(hex_to_ansi "$COLOR_ACCENT")accent color loaded\n${RESET}"
 
   # test 3: print helpers
