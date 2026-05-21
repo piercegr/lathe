@@ -1,0 +1,4 @@
+*.gpg
+*.secret
+secrets
+.env
