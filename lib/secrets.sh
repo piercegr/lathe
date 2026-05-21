@@ -22,18 +22,37 @@ check_gpg_key() {
 # endregion
 
 # region secrets functions
-
+# region loading secrets
 # loading the gpg secret
-load_secrets() {
+load_personal_secrets() {
   local KEY_PATH="$HOME/.config/lathe/secrets.gpg"
   if [[ -f "$KEY_PATH" ]]; then
     source <(gpg --quiet --decrypt "$KEY_PATH")
+    print_success "personal secrets loadeed"
     return 0
   else
-    print_error "error: secrets file not found -> run 'lathe setup' to initialize" # TEMP: 'lathe setup' not made yet
+    print_error "error: secrets file not found -> run 'lathe setup' to initialize" # TODO: 'lathe setup' not made yet
     exit 1
   fi
 }
+
+# loads org secrets from the secrets repo
+load_org_secrets() {
+  local ORG_PATH="$SECRETS_REPO/secrets/org.gpg"
+  if [[ ! -d "$SECRETS_REPO" ]]; then
+    print_error "error: secrets repo not found at $SECRETS_REPO -> update SECRETS_REPO in config/defaults.conf"
+    exit 1
+  fi
+  if [[ -f "$ORG_PATH" ]]; then
+    source <(gpg --quiet --decrypt "$ORG_PATH")
+    print_success "org secrets loaded"
+    return 0
+  else
+    print_error "error: org secrets not found -> run 'lathe setup' to initialize"
+    exit 1
+  fi
+}
+# endregion
 
 # region saving secrets
 # prompting secrets from user
@@ -59,13 +78,15 @@ save_personal_secrets() {
 
 # saves org secrets (encrypted for all keys in the secrets repo)
 save_org_secrets() {
+  # create TEMP
   local TEMP=$(mktemp)
   trap "rm -f $TEMP" EXIT
-
+  # prompt for secrets
   prompt_secret TAILSCALE_AUTH_KEY "$TEMP"
   prompt_secret PORKBUN_API_KEY "$TEMP"
   prompt_secret PORKBUN_SECRET_KEY "$TEMP"
-
+  # listing GPG recipients
+  # TODO: make a reencrypt_org_secrets function
   local recipients=()
   for key in "$SECRETS_REPO/keys"/*.asc; do
     local fingerprint=$(gpg --show-keys --with-colons "$key" 2>/dev/null | grep '^pub' | cut -d: -f5)
