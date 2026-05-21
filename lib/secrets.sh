@@ -36,9 +36,27 @@ load_secrets() {
 
 # region saving secrets
 # prompting secrets from user
-#prompt_secrets() {
-#  
-#}
-
+prompt_secret() {
+  local NAME="$1"
+  local TEMP_FILE="$2"
+  local VALUE=$(prompt "Enter $NAME:")
+  echo "$NAME=$VALUE" >> "$TEMP_FILE"
+}
+# saving all secrets using prompt_secret
+save_secrets() {
+  # set up temp
+  local TEMP=$(mktemp)
+  trap "rm -f $TEMP" EXIT
+  mkdir -p "$HOME/.config/lathe"
+  # get all secrets
+  local GPG_FINGERPRINT=$(prompt "Enter GPG_FINGERPRINT:")
+  prompt_secret TAILSCALE_AUTH_KEY "$TEMP"
+  prompt_secret PORKBUN_API_KEY "$TEMP"
+  prompt_secret PORKBUN_SECRET_KEY "$TEMP"
+  echo "GPG_FINGERPRINT=$GPG_FINGERPRINT" >> "$TEMP"
+  # encrpt secrets.gpg
+  gpg --quiet --recipient "$GPG_FINGERPRINT" --encrypt --output "$HOME/.config/lathe/secrets.gpg" "$TEMP"
+  print_success "secrets saved"
+}
 # endregion
 # endregion 
