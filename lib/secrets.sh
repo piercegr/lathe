@@ -19,3 +19,26 @@ check_gpg_key() {
   fi
 }
 # endregion
+
+# region secrets functions
+
+# loading the gpg secret
+load_secrets() {
+  local KEY_PATH="$HOME/.config/lathe/secrets.gpg"
+  if [[ -f "$KEY_PATH" ]]; then
+    source <(gpg --quiet --decrypt "$KEY_PATH")
+    return 0
+  else
+    print_error "error: secrets file not found -> run 'lathe setup' to initialize" # TEMP: 'lathe setup' not made yet
+    exit 1
+  fi
+}
+
+# region saving secrets
+# prompting secrets from user
+#prompt_secrets() {
+#  
+#}
+
+# endregion
+# endregion 

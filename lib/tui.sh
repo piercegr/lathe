@@ -18,7 +18,8 @@ load_theme() {
   if [[ -f "$1" ]]; then
     source "$1"
   else
-    printf "$(hex_to_ansi "#f87171")Error: theme file not found: $1${RESET}\n" # hard coded color bc the err color won't be loaded when it errs
+    # hard coded color bc the err color won't be loaded when it errs
+    printf "$(hex_to_ansi "#f87171")Error: theme file not found: $1${RESET}\n"
   fi
 }
 
@@ -35,8 +36,6 @@ cursor_hide() { printf "\033[?25l"; }
 cursor_show() { printf "\033[?25h"; }
 
 # region TUI functions (written by Sonnet 4.6)
-
-
 # header
 print_header() {
   local title="$1"
@@ -244,7 +243,6 @@ status_line() {
     pending) printf "$(hex_to_ansi "$COLOR_MUTED")·${RESET} $message\n" ;;
   esac
 }
-
 # endregion
 
 # testing
