@@ -3,7 +3,7 @@ source "$(dirname "$0")/tui.sh"
 source "$(dirname "$0")/../config/defaults.conf"
 
 # search docker hub for an image
-function search_image() { # TODO: allow the user to go back and select another image or another query
+search_image() { # TODO: allow the user to go back and select another image or another query
   local QUERY=$(prompt "Search Docker Hub:")
   local RESULTS=$(curl -s "https://hub.docker.com/v2/search/repositories/?query=$QUERY&page_size=10" | jq -r '.results[].repo_name')
 
@@ -23,7 +23,7 @@ function search_image() { # TODO: allow the user to go back and select another i
 }
 
 # get available tags for an image
-function select_tag() {
+select_tag() {
   local IMAGE="$1"
   local RESULTS=$(curl -s "https://hub.docker.com/v2/repositories/$IMAGE/tags/?page_size=10" | jq -r '.results[].name')
 
@@ -42,7 +42,7 @@ function select_tag() {
 }
 
 # prompt for container config
-function configure_container() {
+configure_container() {
   local IMAGE="$1"
   local TAG="$2"
 
@@ -62,7 +62,7 @@ function configure_container() {
 }
 
 # deploy container to CT
-function deploy_container() {
+deploy_container() {
   local CT_ID="$1"
 
   local IMAGE=$(search_image)

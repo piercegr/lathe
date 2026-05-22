@@ -3,7 +3,7 @@ RESET="\033[0m"
 source "$(dirname "$0")/../config/defaults.conf"
 
 # sets the input hex into making the outputs that color
-function hex_to_ansi() {
+hex_to_ansi() {
   local HEX=${1#'#'}
   local R_HEX=${HEX:0:2}
   local G_HEX=${HEX:2:2}

@@ -3,7 +3,7 @@ source "$(dirname "$0")/tui.sh"
 source "$(dirname "$0")/../config/defaults.conf"
 
 # outputs next CT number
-function next_ct_id() {
+next_ct_id() {
   print_text "Fetching CT ID"
   local HIGHEST=$(ssh root@$PVE_HOST "pct list | awk 'NR>1 {print \$1}' | sort -n | tail -1") # cmd by Sonnet 4.6
   if ! [[ "$HIGHEST" =~ ^[0-9]+$ ]]; then
@@ -16,7 +16,7 @@ function next_ct_id() {
 }
 
 # gets template for CT
-function download_template() {
+download_template() {
   if [[ -z "$(ssh root@$PVE_HOST "pveam list $CT_STORAGE | grep '$CT_TEMPLATE'")" ]]; then
     print_text "$CT_TEMPLATE not found, downloading now"
     ssh root@$PVE_HOST "pveam download $CT_STORAGE $CT_TEMPLATE" &
@@ -34,7 +34,7 @@ function download_template() {
 }
 
 # creating the CT
-function create_ct() {
+create_ct() {
   # CT specifics
   local CT_ID=$(next_ct_id)
   local HOSTNAME=$(prompt "Enter CT hostname:")
@@ -86,7 +86,7 @@ function create_ct() {
 }
 
 # actually setup the CT
-function setup_ct() {
+setup_ct() {
   local CT_ID="$1"
 
   # start the CT
