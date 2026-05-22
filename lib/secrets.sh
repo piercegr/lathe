@@ -22,6 +22,9 @@ check_gpg_key() {
 # endregion
 
 # region secrets functions
+
+# TODO: migrate org secrets and admin keys to Vaultwarden when available
+
 # region loading secrets
 # loading the gpg secret
 load_personal_secrets() {

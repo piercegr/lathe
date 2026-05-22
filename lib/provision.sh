@@ -84,3 +84,68 @@ function create_ct() {
 
   print_success "CT $HOSTNAME ($CT_ID) created"
 }
+
+# actually setup the CT
+function setup_ct() {
+  local CT_ID="$1"
+
+  # start the CT
+  ssh root@$PVE_HOST "pct start $CT_ID"
+  spinner $! "Starting CT $CT_ID..."
+  sleep 5  # TODO: make this boot wait actually check if it worked, and end early if it did (or a bit later if not)
+
+  # install tailscale
+  ssh root@$PVE_HOST "pct exec $CT_ID -- bash -c 'curl -fsSL https://tailscale.com/install.sh | sh'" &
+  spinner $! "Installing Tailscale..."
+  wait $!
+  if [[ $? -ne 0 ]]; then
+    print_error "error: failed to install Tailscale"
+    exit 1
+  fi
+
+  # connect to tailscale
+  ssh root@$PVE_HOST "pct exec $CT_ID -- tailscale up --authkey $TAILSCALE_AUTH_KEY" &
+  spinner $! "Connecting to Tailscale..."
+  wait $!
+  if [[ $? -ne 0 ]]; then
+    print_error "error: failed to connect to Tailscale"
+    exit 1
+  fi
+  print_success "CT $CT_ID connected to Tailscale"
+
+  # install docker
+  ssh root@$PVE_HOST "pct exec $CT_ID -- bash -c 'curl -fsSL https://get.docker.com | sh'" &
+  spinner $! "Installing Docker..."
+  wait $!
+  if [[ $? -ne 0 ]]; then
+    print_error "error: failed to install Docker"
+    exit 1
+  fi
+  print_success "Docker installed"
+
+  # read admins.conf and multiselect
+  source "$SECRETS_REPO/admins.conf"
+  local admin_names=()
+  for admin in "${!admins[@]}"; do
+    admin_names+=("$admin")
+  done
+  local selected=$(multiselect "Select admins to add to this CT:" "${admin_names[@]}")
+
+  # create accounts for selected admins
+  for admin in $selected; do
+    local key="${admins[$admin]}"
+    ssh root@$PVE_HOST "pct exec $CT_ID -- bash -c '
+      useradd -m -s /bin/bash $admin
+      usermod -aG sudo $admin
+      mkdir -p /home/$admin/.ssh
+      echo \"$key\" > /home/$admin/.ssh/authorized_keys
+      chmod 700 /home/$admin/.ssh
+      chmod 600 /home/$admin/.ssh/authorized_keys
+      chown -R $admin:$admin /home/$admin/.ssh
+    '"
+    print_success "Created account for $admin"
+    # i hate bash so much
+  done
+
+  print_success "CT $CT_ID setup complete"
+}
