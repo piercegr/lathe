@@ -3,7 +3,8 @@
 source "$(dirname "$0")/lib/tui.sh"
 source "$(dirname "$0")/lib/secrets.sh"
 source "$(dirname "$0")/lib/provision.sh"
-source "$(dirname "$0")/lib/docker.sh"ss
+source "$(dirname "$0")/lib/docker.sh"
+VERSION=$(jq -r '.version' "$(dirname "$0")/package.json")
 
 check_single_dep() {
 if command -v $1 &>/dev/null; then
@@ -25,6 +26,10 @@ check_deps() {
 main() {
   check_deps
   load_theme
+  
+  print_header "lathe" "v$VERSION"
   load_org_secrets
   load_personal_secrets
 }
+
+main

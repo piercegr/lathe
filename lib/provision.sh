@@ -1,6 +1,6 @@
 # globals
-source "$(dirname "$0")/tui.sh"
-source "$(dirname "$0")/../config/defaults.conf"
+source "$(dirname "${BASH_SOURCE[0]}")/tui.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../config/defaults.conf"
 
 # outputs next CT number
 next_ct_id() {

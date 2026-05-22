@@ -1,6 +1,6 @@
 # globals
 RESET="\033[0m"
-source "$(dirname "$0")/../config/defaults.conf"
+source "$(dirname "${BASH_SOURCE[0]}")/../config/defaults.conf"
 
 # sets the input hex into making the outputs that color
 hex_to_ansi() {
@@ -17,7 +17,7 @@ hex_to_ansi() {
 # sourcing / loading theme
 load_theme() {
   local THEME="${1:-$LATHE_THEME}"
-  local THEME_PATH="$(dirname "$0")/../config/themes/$THEME.conf"
+  local THEME_PATH="$(dirname "${BASH_SOURCE[0]}")/../config/themes/$THEME.conf"
   if [[ -f "$THEME_PATH" ]]; then
     source "$THEME_PATH"
   else
