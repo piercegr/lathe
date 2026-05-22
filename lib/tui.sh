@@ -4,13 +4,13 @@ source "$(dirname "$0")/../config/defaults.conf"
 
 # sets the input hex into making the outputs that color
 function hex_to_ansi() {
-  HEX=${1#'#'}
-  R_HEX=${HEX:0:2}
-  G_HEX=${HEX:2:2}
-  B_HEX=${HEX:4:2}
-  R_DEC=$((16#$R_HEX))
-  G_DEC=$((16#$G_HEX))
-  B_DEC=$((16#$B_HEX))
+  local HEX=${1#'#'}
+  local R_HEX=${HEX:0:2}
+  local G_HEX=${HEX:2:2}
+  local B_HEX=${HEX:4:2}
+  local R_DEC=$((16#$R_HEX))
+  local G_DEC=$((16#$G_HEX))
+  local B_DEC=$((16#$B_HEX))
   printf "\033[38;2;${R_DEC};${G_DEC};${B_DEC}m"
 }
 
