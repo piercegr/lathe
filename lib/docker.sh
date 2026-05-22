@@ -40,3 +40,23 @@ function select_tag() {
   local TAG=$(select_option "Select a tag:" "${options[@]}")
   echo "$TAG"
 }
+
+# prompt for container config
+function configure_container() {
+  local IMAGE="$1"
+  local TAG="$2"
+
+  local PORTS=$(prompt "Port mappings (e.g. 8080:80) leave blank for none:")
+  local VOLUMES=$(prompt "Volume mappings (e.g. /data:/data) leave blank for none:")
+  local ENV_VARS=$(prompt "Environment variables (e.g. KEY=value) leave blank for none:")
+  local CONTAINER_NAME=$(prompt "Container name:")
+
+  # build docker run command
+  local CMD="docker run -d --name $CONTAINER_NAME --restart unless-stopped"
+  [[ -n "$PORTS" ]] && CMD="$CMD -p $PORTS"
+  [[ -n "$VOLUMES" ]] && CMD="$CMD -v $VOLUMES"
+  [[ -n "$ENV_VARS" ]] && CMD="$CMD -e $ENV_VARS"
+  CMD="$CMD $IMAGE:$TAG"
+
+  echo "$CMD"
+}
