@@ -60,3 +60,32 @@ function configure_container() {
 
   echo "$CMD"
 }
+
+# deploy container to CT
+function deploy_container() {
+  local CT_ID="$1"
+
+  local IMAGE=$(search_image)
+  local TAG=$(select_tag "$IMAGE")
+  local CMD=$(configure_container "$IMAGE" "$TAG")
+
+  # pull image
+  ssh root@$PVE_HOST "pct exec $CT_ID -- docker pull $IMAGE:$TAG" &
+  spinner $! "Pulling $IMAGE:$TAG..."
+  wait $!
+  if [[ $? -ne 0 ]]; then
+    print_error "error: failed to pull $IMAGE:$TAG"
+    exit 1
+  fi
+
+  # run container
+  ssh root@$PVE_HOST "pct exec $CT_ID -- $CMD" &
+  spinner $! "Starting container..."
+  wait $!
+  if [[ $? -ne 0 ]]; then
+    print_error "error: failed to start container"
+    exit 1
+  fi
+
+  print_success "Container $IMAGE:$TAG deployed to CT $CT_ID"
+}
