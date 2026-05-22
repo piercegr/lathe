@@ -21,7 +21,7 @@ load_theme() {
   if [[ -f "$THEME_PATH" ]]; then
     source "$THEME_PATH"
   else
-    printf "$(hex_to_ansi "#f87171")Error: theme '$THEME' not found${RESET}\n"
+    printf "$(hex_to_ansi "#f87171")error: theme '$THEME' not found${RESET}\n"
   fi
 }
 
@@ -60,6 +60,15 @@ prompt() {
   local question="$1"
   printf "$(hex_to_ansi "$COLOR_ACCENT")? $(hex_to_ansi "$COLOR_TEXT")$question${RESET} "
   read -r REPLY
+  echo "$REPLY"
+}
+
+# secure prompting
+prompt_secure() {
+  local question="$1"
+  printf "$(hex_to_ansi "$COLOR_ACCENT")? $(hex_to_ansi "$COLOR_TEXT")$question${RESET} "
+  read -rs REPLY
+  echo ""
   echo "$REPLY"
 }
 
