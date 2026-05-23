@@ -51,8 +51,12 @@ load_org_secrets() {
     print_success "org secrets loaded"
     return 0
   else
-    print_error "error: org secrets not found -> run 'lathe setup' to initialize"
-    exit 1
+    print_warn "org secrets not found"
+    if confirm "Run setup now?" y; then
+      save_org_secrets
+    else
+      exit 1
+    fi
   fi
 }
 # endregion
