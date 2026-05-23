@@ -30,7 +30,7 @@ check_gpg_key() {
 load_personal_secrets() {
   local KEY_PATH="$HOME/.config/lathe/secrets.gpg"
   if [[ -f "$KEY_PATH" ]]; then
-    source <(gpg --quiet --decrypt "$KEY_PATH")
+    source <(gpg --quiet --pinentry-mode loopback --decrypt "$KEY_PATH")
     print_success "personal secrets loadeed"
     return 0
   else
@@ -51,7 +51,7 @@ load_org_secrets() {
     exit 1
   fi
   if [[ -f "$ORG_PATH" ]]; then
-    source <(gpg --quiet --decrypt "$ORG_PATH")
+    source <(gpg --quiet --pinentry-mode loopback --decrypt "$ORG_PATH")
     print_success "org secrets loaded"
     return 0
   else
@@ -71,7 +71,8 @@ prompt_secret() {
   local NAME="$1"
   local TEMP_FILE="$2"
   printf "Enter %s: " "$NAME"
-  read -r VALUE
+  read -rs VALUE
+  echo ""
   echo "$NAME=$VALUE" >> "$TEMP_FILE"
 }
 # saving all secrets using prompt_secret
@@ -81,10 +82,11 @@ save_personal_secrets() {
   trap "rm -f $TEMP" EXIT
   mkdir -p "$HOME/.config/lathe"
 
-  local GPG_FINGERPRINT=$(prompt "Enter your GPG fingerprint:")
+  printf "Enter GPG fingerprint: "
+  read -r GPG_FINGERPRINT
   echo "GPG_FINGERPRINT=$GPG_FINGERPRINT" >> "$TEMP"
 
-  gpg --quiet --recipient "$GPG_FINGERPRINT" --encrypt --output "$HOME/.config/lathe/secrets.gpg" "$TEMP"
+  gpg --quiet --pinentry-mode loopback --recipient "$GPG_FINGERPRINT" --encrypt --output "$HOME/.config/lathe/secrets.gpg" "$TEMP"
   print_success "personal secrets saved"
 }
 
