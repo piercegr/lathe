@@ -81,8 +81,10 @@ create_ct() {
     print_error "error: failed to create CT $HOSTNAME"
     exit 1
   fi
-
   print_success "CT $HOSTNAME ($CT_ID) created"
+
+  setup_ct $CT_ID
+  deploy_container $CT_ID
 }
 
 # actually setup the CT
