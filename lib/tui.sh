@@ -118,7 +118,7 @@ select_option() {
       if [[ $i -eq $selected ]]; then
         printf "$(hex_to_ansi "$COLOR_ACCENT")  > ${options[$i]}${RESET}\n"
       else
-        printf "$(hex_to_ansi "$COLOR_MUTED")    ${options[$i]}${RESET}\n"
+        printf "$(hex_to_ansi "$COLOR_TEXT")    ${options[$i]}${RESET}\n"
       fi
     done
   }
