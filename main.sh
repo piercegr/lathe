@@ -26,14 +26,15 @@ check_deps() {
 main() {
   check_deps
   load_theme
-
   print_header "lathe" "v$VERSION"
   load_org_secrets
   load_personal_secrets
 
+  tput reset
+  print_header "lathe" "v$VERSION"
   # main menu
-  local CHOICE=$(select_option "Select an operation:" "Create a new CT" "Exit")
-  case "$CHOICE" in
+  select_option "Select an operation:" "Create a new CT" "Exit"
+  case "$SELECTED" in
     "Create a new CT") create_ct ;;
     "Exit") exit 0 ;;
   esac

@@ -147,7 +147,7 @@ select_option() {
   done
   printf "\033[K"
   cursor_show
-  echo "${options[$selected]}"
+  SELECTED="${options[$selected]}"
 }
 
 # multiselect with arrow keys, space to toggle, enter to confirm
@@ -214,7 +214,7 @@ multiselect() {
   for i in "${!options[@]}"; do
     [[ ${checked[$i]} -eq 1 ]] && result+=("${options[$i]}")
   done
-  echo "${result[@]}"
+  MULTISELECTED="${result[@]}"
   cursor_show
 }
 
