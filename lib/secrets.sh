@@ -34,8 +34,12 @@ load_personal_secrets() {
     print_success "personal secrets loadeed"
     return 0
   else
-    print_error "error: secrets file not found -> run 'lathe setup' to initialize" # TODO: 'lathe setup' not made yet
-    exit 1
+    print_warn "personal secrets not found"
+    if confirm "Run setup now?" y; then
+      save_personal_secrets
+    else
+      exit 1
+    fi
   fi
 }
 
@@ -66,7 +70,8 @@ load_org_secrets() {
 prompt_secret() {
   local NAME="$1"
   local TEMP_FILE="$2"
-  local VALUE=$(prompt "Enter $NAME:")
+  printf "Enter %s: " "$NAME"
+  read -r VALUE
   echo "$NAME=$VALUE" >> "$TEMP_FILE"
 }
 # saving all secrets using prompt_secret
